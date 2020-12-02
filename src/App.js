@@ -4,12 +4,14 @@ import styled from '@emotion/styled';
 import image from './cryptomonedas.png';
 import Form from './Components/Form';
 import Pricing from './Components/Pricing';
+import Spinner from './Components/Spinner.js';
 
 function App() {
 
   const [exchange, setExchange] = useState('');
   const [crypto, setCrypto] = useState('');
   const [result, setResult] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
 
@@ -19,13 +21,23 @@ function App() {
       const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${crypto}&tsyms=${exchange}`;
 
       const result = await axios.get(url)
-      setResult(result.data.DISPLAY[crypto][exchange])
+
+      setLoading(true)
+
+      setTimeout(() => {
+
+        setLoading(false);
+
+        setResult(result.data.DISPLAY[crypto][exchange]);
+      }, 2000);
+      
     }
     cryptoCheck();
 
   }, [exchange, crypto])
 
 
+const component = (loading) ? <Spinner /> : <Pricing result={result} />
 
   return (
     <Container>
@@ -42,9 +54,8 @@ function App() {
           setCrypto={setCrypto}
         />
 
-        <Pricing 
-          result={result}
-        />
+        {component}
+
       </div>
     </Container>
   )
